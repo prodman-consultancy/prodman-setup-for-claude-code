@@ -269,7 +269,7 @@ each item finishes.
 back with it. Without a checkpoint on disk the run restarts from zero and the user is asked for their
 selection a second time, which is the worst possible outcome. So, immediately before asking:
 
-Write `$HOME/.claude/prodman-setup-for-claude-code-state.md` containing:
+Write `$HOME/.prodman-setup/state.md` containing:
 
 - which phase the run is in, and which step inside it
 - the user's full selection, by number, exactly as they gave it
@@ -281,6 +281,11 @@ Never put a credential, token, key, or password in that file. Those go straight 
 
 This file is the one exception to keeping temporary work in the session scratchpad, and the reason is
 mechanical: a scratchpad belongs to one session, and the whole point here is surviving into the next one.
+
+**It goes in `$HOME/.prodman-setup/`, not inside `$HOME/.claude/`.** Claude Code treats everything under
+its own configuration directory as sensitive, so writing there is refused outright or held for approval.
+A checkpoint that cannot be written is worse than none, because you only find out at the moment you
+needed it. Create the directory if it does not exist.
 
 **How to ask.** One short block, the exact steps for their setup, and how to come back:
 
@@ -610,6 +615,12 @@ Each item is one line: number, name, what it does for you, what you need to have
 the ones flagged **Recommended**. Do not expand beyond that line unless the user asks about a specific
 item. Everything on the list can be added later, so say that once and move on.
 
+**Separate the name from the description with a period or a colon, never with a dash.** This menu is the
+longest message of the whole run and the place where the forbidden em dash slips in most easily, because
+`name — description` is the reflex format for a list like this. It is banned here exactly as everywhere
+else, per Section 1.2. Write `**Playwright**. Opens a real browser...` or `**Playwright**: opens a real
+browser...`. Before sending the menu, scan it once for `—` and `–` and fix any that appear.
+
 Some choices also add a permanent rule to the `CLAUDE.md` in Phase 7: items 1, 5, anything in the 6 to
 14 range, 16, 17, 18, 20, 21, 22, and 23. Mention that in one line at the end of the menu, not per item.
 
@@ -640,7 +651,11 @@ whole selection still fits in one reply:
 A bare `19` or `23` means the agent asks which one, so prefer presenting the letters in the menu and
 save that round trip.
 
-Echo the selection back once as a numbered list, get a `Y`, then install without asking again per item.
+Echo the selection back once, get a `Y`, then install without asking again per item.
+
+**Keep the original numbers in that echo.** A selection of `15,16,17,18` is confirmed as items 15, 16, 17,
+and 18, never renumbered to 1, 2, 3, 4. Renumbering makes the user think you understood something else,
+and it breaks the shared vocabulary for the rest of the run, including anything they want to add later.
 
 ### 4.3 The rule that overrides the user's number
 
@@ -1323,7 +1338,20 @@ machine actually has.
 `$HOME/.claude/CLAUDE.md` holds instructions the agent reads in every session, in every project, on
 this machine. It is how the setup outlives this conversation.
 
-### 8.2 Never overwrite, always merge
+### 8.2 Expect a permission prompt, and prepare the user for it
+
+Claude Code treats its own configuration directory as sensitive, so writing to
+`$HOME/.claude/CLAUDE.md` asks the user to approve it. The request is normal and the write succeeds once
+approved, but a person who was not told it was coming reads "wants to write to a sensitive file" and says
+no, which throws away the whole point of the run.
+
+So say it before writing, in one line: "I am going to save these rules in your global settings file, and
+your Claude will ask you to approve that. Approve it." Then write.
+
+If the user declines, do not argue and do not retry in a loop. Show them the block, tell them the exact
+path, and say they can paste it there whenever they want. Then record it as pending in Phase 8.
+
+### 8.3 Never overwrite, always merge
 
 1. Check whether the file exists.
 2. If it exists, read it fully and back it up next to itself, with a timestamped name.
@@ -1342,12 +1370,12 @@ this machine. It is how the setup outlives this conversation.
 Never delete or rewrite a rule the user wrote themselves. If a generated rule contradicts something
 already in the file, do not resolve it silently: show both, and let the user decide.
 
-### 8.3 What language the file is written in
+### 8.4 What language the file is written in
 
 Write the `CLAUDE.md` content in the user's language, the same one detected in Section 1. Keep the
 block markers, file paths, commands, and tool names in English.
 
-### 8.4 Rules that always go in
+### 8.5 Rules that always go in
 
 These are the rules that make the setup permanent. They are not instructions for the installation run,
 they are how the agent behaves from now on, in every session, in every project, in every kind of
@@ -1552,7 +1580,7 @@ present tense, with no reference to this setup having happened.
 - A memory reflects what was true when it was written. Before acting on one that names a file, a
   command, a flag, or a version, verify it still holds.
 
-### 8.5 Rules that go in only if the matching tool got installed
+### 8.6 Rules that go in only if the matching tool got installed
 
 Include a rule only when its tool is actually present. A rule pointing at a tool that is not
 installed is worse than no rule, because it will be followed and fail.
@@ -1717,7 +1745,7 @@ character, a non breaking space, or an exotic space inside text.
 - A script that runs only on the user's own machine and never leaves it does not need this. Say so
   rather than invoking the skill out of habit.
 
-### 8.6 Show it before you write it
+### 8.7 Show it before you write it
 
 Show the user the exact block you are about to write, in their language, and get a yes. If they want
 a rule out, take it out without arguing. Then write the file and confirm the path.
@@ -1745,7 +1773,7 @@ Write the memories only once, in one pass, at the end. Do not write a memory dur
 and come back to correct it.
 
 This phase covers only the memories about this setup. It is not a limit on memory going forward: rule L
-in Section 8.4 makes ongoing memory maintenance the agent's standing job from the next session on. This
+in Section 8.5 makes ongoing memory maintenance the agent's standing job from the next session on. This
 phase writes the first entries, rule L keeps them alive.
 
 ### 9.1 Where and how
@@ -1768,7 +1796,7 @@ After each file, add one pointer line to `MEMORY.md`, the index that loads every
 `- [Title](file.md): hook`. Never put memory content in the index itself.
 
 Use absolute dates in `DD/MM/YYYY` format, never "today" or "last week". Read the machine's clock
-before writing any date, using the command in rule E of Section 8.4. Do not infer the date from
+before writing any date, using the command in rule E of Section 8.5. Do not infer the date from
 context, and do not use the date supplied in the model's own context.
 
 Write the memory content in the user's language, keeping tool names, paths, and commands in English.
@@ -1793,7 +1821,7 @@ and do not write one for anything that only mattered inside this conversation.
 
 ### 9.3 Delete the checkpoint
 
-Delete `$HOME/.claude/prodman-setup-for-claude-code-state.md` if it exists. Everything in it that still matters is in the
+Delete `$HOME/.prodman-setup/state.md` if it exists. Everything in it that still matters is in the
 memories now, and leaving it behind makes a future session believe a setup was left half finished.
 
 ### 9.4 Close out
@@ -1832,7 +1860,7 @@ antivirus still blocks it, tell the user which file was blocked and let them dec
 around their antivirus.
 
 **The user came back from a restart and the conversation lost the thread.**
-Read `$HOME/.claude/prodman-setup-for-claude-code-state.md`. It holds the phase, the user's selection, what is done, and
+Read `$HOME/.prodman-setup/state.md`. It holds the phase, the user's selection, what is done, and
 the next action. State where the run is in one line and continue. Never ask for the selection again, and
 never re audit the machine.
 
