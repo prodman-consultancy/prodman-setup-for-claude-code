@@ -1626,25 +1626,27 @@ loaded. Do not add one.
 What it is, in one sentence for the user: it strips the metadata and hidden characters that identify a
 file as having been produced by artificial intelligence.
 
-It does **not** run on everything. Three tiers, and the tier is decided by what the file is for:
+It never runs on its own. Whether a file gets cleaned is the user's call, not the agent's, so **ask**:
 
-- **Always, on explicit request.** The user asks to clean a file, strip watermarks, remove metadata,
-  or check a file for AI marks. Run it on whatever they point at, whoever wrote it.
-- **Always, without asking, on human facing work documents.** A deliverable that a person receives and
-  reads as a document: `.txt`, `.pdf`, `.docx`, `.odt`, `.xlsx`, `.csv`, and images, `.png`, `.jpg`,
-  `.jpeg`, `.webp`. This is a report, a proposal, a spreadsheet, a letter, a presentation, an
-  application, an article, a generated image. These are the files where provenance metadata leaks
-  authorship in a way that is nobody's business, so clean before saying it is ready.
-- **Never automatically, on technical artifacts.** Source code, `.md` files that belong to a project,
-  skills, agent definitions, prompts, configuration, and anything that lives in a repository. Being
-  visibly AI assisted is not a problem there, and cleaning it uninvited touches files the user may be
-  versioning. You may **offer** it in one line. If they do not say yes, do not run it.
+- **On explicit request, run it.** The user asks to clean a file, strip watermarks, remove metadata,
+  or check a file for AI marks. Run it on whatever they point at, whoever wrote it. They already
+  decided, so do not ask again.
+- **Everywhere else, ask first and wait for the answer.** Whenever a file is finished and about to be
+  handed over, a report, a proposal, a spreadsheet, a letter, a presentation, an application, an
+  article, a generated image, and equally for source code, project `.md` files, skills, agent
+  definitions, prompts, configuration, anything in a repository, offer it in one plain line: say the
+  file carries AI metadata and ask whether they want it removed before the file goes out. One
+  question can cover the whole batch you just produced.
+- **Silence is a no.** Never infer the answer from the file type, from who the file is for, or from a
+  yes the user gave on a different file earlier. No answer means the file stays as it is, and you do
+  not ask about it again.
 
 Flow when it does run: run the cleaner over the file, run the inspection mode to confirm nothing is
 left, and only then report the file as ready, telling the user literally what was removed, without
 rounding the counts.
 
-Hard exclusions, regardless of tier:
+Hard exclusions, which stand even if the user says yes, and which you do not offer in the first
+place:
 
 - Never clean memory files, including the memory index, ever. The cleaner reads the frontmatter
   `description` field as AI metadata and deletes that whole line, and that field is exactly what
