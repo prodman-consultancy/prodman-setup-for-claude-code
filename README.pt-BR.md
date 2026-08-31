@@ -28,16 +28,16 @@ recebe tratamento diferente: ausente instala, presente e atualizado deixa como e
 defasado propõe atualização no lugar. Ele nunca instala por cima de uma versão que funciona e nunca
 reinstala para "consertar" algo.
 
-**Instala a base só se estiver faltando.** Node.js, Git, Python, uv, Docker Desktop, Google Chrome,
+**Instala a base só se estiver faltando.** Node.js, Git, Python, uv, Docker Desktop,
 VS Code. Sempre da fonte oficial atual do fornecedor, nunca de instalador embalado.
 
-**Oferece 28 itens opcionais em um menu só**, em três grupos, respondidos numa única resposta:
+**Oferece 18 itens opcionais em um menu só**, em três grupos, respondidos numa única resposta:
 
 | Grupo | O que cobre |
 |-------|-------------|
-| Conexões, 1 a 14 | Automação de navegador, busca na web, diagnóstico de site, Google Workspace, Docker, GitHub, Railway, Supabase, Vercel, Cloudflare, Metabase, Sentry, PostHog, Higgsfield |
-| Métodos de trabalho, 15 a 18 | Disciplina de código mínimo, prática de engenharia, segurança por padrão, escrita em português brasileiro |
-| Ferramentas separadas, 19 a 28 | Transcrição de voz, limpeza de metadados, análise de segurança de skill, notas, apresentações, ERP, CRM, central de atendimento, extração de dados, automação de fluxo |
+| Conexões, 1 a 9 | Automação de navegador, Google Workspace, Docker, GitHub, Railway, Supabase, Cloudflare, Metabase, Higgsfield |
+| Métodos de trabalho, 10 a 13 | Disciplina de código mínimo, prática de engenharia, segurança por padrão, escrita em português brasileiro |
+| Ferramentas separadas, 14 a 18 | Transcrição de voz, limpeza de metadados, análise de segurança de skill, notas, apresentações |
 
 Cada item explica, em linguagem simples, o que faz por você, o que você precisa ter antes de funcionar
 e se custa algo. Nada é instalado para um serviço em que você não tem conta.

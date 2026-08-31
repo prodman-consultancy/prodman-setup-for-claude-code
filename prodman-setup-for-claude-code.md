@@ -27,7 +27,7 @@ Execution order, fixed:
 |-------|--------------|-----------|
 | 1 | Audit the machine and report findings | No |
 | 2 | Install the missing required base | No |
-| 3, 4, 5 | One menu of 28 items, one answer, then install what was picked, in that order. May include one restart in the middle when browser assistance is needed | Yes, the user may pick none |
+| 3, 4, 5 | One menu of 18 items, one answer, then install what was picked, in that order. May include one restart in the middle when browser assistance is needed | Yes, the user may pick none |
 | 6 | Restart, finish authorizations, verify, report | Only when nothing was installed |
 | 7 | Write the global `CLAUDE.md` | No |
 | 8 | Write memories, last of all | No |
@@ -79,7 +79,7 @@ this becomes unpleasant. Compress wherever the pipeline allows:
 
 - Run the whole audit battery in one pass, not one command at a time.
 - Group independent installs into one call instead of one call per package.
-- Present all three menus, items 1 through 28, in a single pass and take one answer for all of them.
+- Present all three menus, items 1 through 18, in a single pass and take one answer for all of them.
   This is the preferred path, not just an accepted one.
 - Ask for every credential the selection requires in one message, not one at a time.
 - When a long install is running, keep talking to the user about the next decision instead of waiting
@@ -242,7 +242,7 @@ three clicks of administrative setup. Do not make the user ask for help twice.
 - **Never write a credential to the screen or into a memory.** Put it straight into the configuration.
   When confirming, show at most the first six characters.
 
-This assistance is available at every step of this runbook, not only in the MCP menu. Item 4 is the one
+This assistance is available at every step of this runbook, not only in the MCP menu. Item 2 is the one
 place where it is not optional, because the setup there is genuinely too technical to hand to the user.
 
 ### 1.9 Restarts, and resuming exactly where you stopped
@@ -337,12 +337,6 @@ Then these, which need their own handling:
 # Docker daemon actually running, not just installed
 docker info --format '{{.ServerVersion}}'
 
-# Google Chrome, three possible locations
-@("$env:ProgramFiles\Google\Chrome\Application\chrome.exe",
-  "${env:ProgramFiles(x86)}\Google\Chrome\Application\chrome.exe",
-  "$env:LOCALAPPDATA\Google\Chrome\Application\chrome.exe") |
-  Where-Object { Test-Path $_ }
-
 # Claude Code already authenticated, and what is already configured
 claude mcp list
 claude plugin list
@@ -366,7 +360,6 @@ docker --version 2>/dev/null || echo "docker: missing"
 docker info --format '{{.ServerVersion}}' 2>/dev/null || echo "docker daemon: not running"
 code --version   2>/dev/null | head -1 || echo "vscode cli: missing"
 claude --version 2>/dev/null || echo "claude: missing"
-test -d "/Applications/Google Chrome.app" && echo "chrome: ok" || echo "chrome: missing"
 claude mcp list
 claude plugin list
 ls -1 "$HOME/.claude/skills" 2>/dev/null
@@ -383,7 +376,6 @@ test -f "$HOME/.claude/CLAUDE.md" && echo "CLAUDE.md: exists" || echo "CLAUDE.md
 | Python | 3.11 | Floor for `uv` managed tools |
 | uv | current | Runs the Docker MCP and installs SkillSpector |
 | Docker Desktop | current | Must be installed **and** the daemon must answer |
-| Google Chrome | current | Required by the Chrome DevTools MCP |
 | VS Code | current | Where the user works |
 | Claude Code | current | Must be installed and signed in |
 
@@ -431,7 +423,6 @@ Git              missing             install in Phase 2
 Python           3.9.6, too old      upgrade in Phase 2
 uv               missing             install in Phase 2
 Docker Desktop   installed, stopped  start it in Phase 2
-Google Chrome    missing             install in Phase 2
 VS Code          1.99.0              nothing to do
 Claude Code      2.1.4, signed in    nothing to do
 MCP servers      none configured     Phase 3
@@ -462,7 +453,6 @@ winget install --id OpenJS.NodeJS.LTS       -e --accept-source-agreements --acce
 winget install --id Git.Git                 -e --accept-source-agreements --accept-package-agreements
 winget install --id Python.Python.3.14      -e --accept-source-agreements --accept-package-agreements
 winget install --id astral-sh.uv            -e --accept-source-agreements --accept-package-agreements
-winget install --id Google.Chrome           -e --accept-source-agreements --accept-package-agreements
 winget install --id Microsoft.VisualStudioCode -e --accept-source-agreements --accept-package-agreements
 winget install --id Docker.DockerDesktop    -e --accept-source-agreements --accept-package-agreements
 ```
@@ -514,7 +504,7 @@ put `brew` on the PATH:
 
 ```bash
 brew install node git python uv
-brew install --cask docker google-chrome visual-studio-code
+brew install --cask docker visual-studio-code
 ```
 
 Xcode command line tools, if `git` is still missing after that:
@@ -541,7 +531,6 @@ page, never a link copied out of this file into a version specific artifact.
 | Python | https://www.python.org/downloads |
 | uv | https://docs.astral.sh/uv/getting-started/installation |
 | Docker Desktop | https://www.docker.com/products/docker-desktop |
-| Google Chrome | https://www.google.com/chrome |
 | VS Code | https://code.visualstudio.com |
 | Claude Code | https://claude.com/product/claude-code |
 
@@ -594,22 +583,21 @@ in Phases 3 through 8 works without it.
 
 ### 4.1 Present all three menus at once
 
-Phases 3, 4, and 5 have one shared numbering, 1 to 28, and they are presented **in a single message**,
+Phases 3, 4, and 5 have one shared numbering, 1 to 18, and they are presented **in a single message**,
 then answered once. This is the default path, not an option. Three separate rounds of question and
 answer cost the user three times the tokens and three times the waiting for no benefit.
 
 The message carries three short headers and the items under each, nothing else:
 
-> **Connections, items 1 to 14.** An MCP is a connection that lets Claude reach a tool you already use,
+> **Connections, items 1 to 9.** An MCP is a connection that lets Claude reach a tool you already use,
 > instead of you opening that tool and doing the work by hand. Install only what matches services you
 > actually use.
 >
-> **Working methods, items 15 to 18.** A skill is a method the agent loads and follows. A connection
+> **Working methods, items 10 to 13.** A skill is a method the agent loads and follows. A connection
 > gives it reach, a skill gives it judgment. Free, installed once, valid in every project.
 >
-> **Separate tools, items 19 to 28.** Not part of Claude Code. Install only if the description matches
-> something you actually do. Items 24, 25, and 26 are full applications that run in Docker and take
-> real disk space and setup time.
+> **Separate tools, items 14 to 18.** Not part of Claude Code. Install only if the description matches
+> something you actually do.
 
 Each item is one line: number, name, what it does for you, what you need to have, and the cost. Mark
 the ones flagged **Recommended**. Do not expand beyond that line unless the user asks about a specific
@@ -621,8 +609,8 @@ longest message of the whole run and the place where the forbidden em dash slips
 else, per Section 1.2. Write `**Playwright**. Opens a real browser...` or `**Playwright**: opens a real
 browser...`. Before sending the menu, scan it once for `—` and `–` and fix any that appear.
 
-Some choices also add a permanent rule to the `CLAUDE.md` in Phase 7: items 1, 5, anything in the 6 to
-14 range, 16, 17, 18, 20, 21, 22, and 23. Mention that in one line at the end of the menu, not per item.
+Some choices also add a permanent rule to the `CLAUDE.md` in Phase 7: items 1, 3, anything in the 4 to
+9 range, 11, 12, 13, 15, 16, 17, and 18. Mention that in one line at the end of the menu, not per item.
 
 ### 4.2 How the user answers
 
@@ -637,33 +625,33 @@ Accept any of these, and say so in one compact line:
 | `none`, `nenhum` | nothing, skip to Phase 6 |
 | `one by one`, `um por um` | ask item by item, `Y` or `N` each |
 
-**The recommended set** is exactly the items marked `[Recommended]`: 1 through 6, plus 15, 16, and 17,
-plus 18 when the user speaks Portuguese. No item between 19 and 28 is recommended by default, because
+**The recommended set** is exactly the items marked `[Recommended]`: 1 through 4, plus 10, 11, and 12,
+plus 13 when the user speaks Portuguese. No item between 14 and 18 is recommended by default, because
 each one only makes sense for someone who already does that specific thing. Say that in one line if the
 user picks `recommended`, so they know the optional block was not silently included.
 
 **Two items have a sub-choice**, and both are answered with a letter attached to the number, so the
 whole selection still fits in one reply:
 
-- `19a` Wispr Flow, or `19b` Whisper Fogo
-- `23a` Open Slide original, or `23b` Open Slide V2 fork
+- `14a` Wispr Flow, or `14b` Whisper Fogo
+- `18a` Open Slide original, or `18b` Open Slide V2 fork
 
-A bare `19` or `23` means the agent asks which one, so prefer presenting the letters in the menu and
+A bare `14` or `18` means the agent asks which one, so prefer presenting the letters in the menu and
 save that round trip.
 
 Echo the selection back once, get a `Y`, then install without asking again per item.
 
-**Keep the original numbers in that echo.** A selection of `15,16,17,18` is confirmed as items 15, 16, 17,
-and 18, never renumbered to 1, 2, 3, 4. Renumbering makes the user think you understood something else,
+**Keep the original numbers in that echo.** A selection of `10,11,12,13` is confirmed as items 10, 11, 12,
+and 13, never renumbered to 1, 2, 3, 4. Renumbering makes the user think you understood something else,
 and it breaks the shared vocabulary for the rest of the run, including anything they want to add later.
 
 ### 4.3 The rule that overrides the user's number
 
-Never install an MCP for a service the user does not have an account on. If they pick item 8 and have
+Never install an MCP for a service the user does not have an account on. If they pick item 6 and have
 no Supabase account, say so, offer to skip it, and move on. A connection to an account that does not
 exist is a broken menu entry in every future session.
 
-### 4.4 Items 1 through 14
+### 4.4 Items 1 through 9
 
 The command blocks show Windows first, then macOS. On Windows, `stdio` servers that run through
 `npx` need the `cmd /c` prefix. On macOS they do not.
@@ -671,7 +659,7 @@ The command blocks show Windows first, then macOS. On Windows, `stdio` servers t
 **Install order, and the one intermediate restart.** Item 1, Playwright, comes first whenever browser
 assistance will be needed, because an MCP server is not usable until Claude Code restarts. Concretely:
 
-1. If item 4 was selected, or the user asked for browser help on any item, or the selection includes an
+1. If item 2 was selected, or the user asked for browser help on any item, or the selection includes an
    item that needs a key the user does not want to fetch themselves, then item 1 is required. Say so in
    one line: it is the tool that lets you do the setup for them. If they refuse item 1, item 4 becomes
    impossible, and anything else falls back to the user fetching the value manually. State that plainly
@@ -717,44 +705,11 @@ into stays logged in for the next session. Without it every run starts logged ou
 to be redone every time.
 
 This is also the item that lets the agent do administrative setup for the user, per Section 1.8, and it
-is required for item 4. Worth saying in one line when presenting the menu.
+is required for item 2. Worth saying in one line when presenting the menu.
 
 ---
 
-**2. Brave Search** [Recommended]
-Searches the web and brings back current results: news, images, video, and places. This is how the
-agent checks a fact that changed after its training data.
-Needs: a free Brave Search API key. The free tier covers normal use. Create the key at
-https://brave.com/search/api, then paste it when asked.
-Official source: https://github.com/brave/brave-search-mcp-server
-
-```powershell
-claude mcp add --scope user brave-search -e BRAVE_API_KEY=PASTE_KEY_HERE -- cmd /c npx -y "@brave/brave-search-mcp-server@latest"
-```
-
-```bash
-claude mcp add --scope user brave-search -e BRAVE_API_KEY=PASTE_KEY_HERE -- npx -y @brave/brave-search-mcp-server@latest
-```
-
----
-
-**3. Chrome DevTools** [Recommended]
-Measures a website from the inside: what is slow, what broke, what fails to load. When a page feels
-heavy and nobody knows why, this is what finds the reason.
-Needs: Google Chrome installed. Free.
-Official source: https://github.com/ChromeDevTools/chrome-devtools-mcp
-
-```powershell
-claude mcp add --scope user chrome-devtools -- cmd /c npx -y chrome-devtools-mcp@latest
-```
-
-```bash
-claude mcp add --scope user chrome-devtools -- npx -y chrome-devtools-mcp@latest
-```
-
----
-
-**4. Google Workspace: Gmail, Calendar, Drive, and the rest** [Recommended]
+**2. Google Workspace: Gmail, Calendar, Drive, and the rest** [Recommended]
 Reads and sends email, reads and creates calendar events, opens and writes files in Drive, all inside
 the account you authorize.
 Needs: a Google account. Free.
@@ -799,7 +754,7 @@ stop and tell the user exactly what Google asked for. Do not try to work around 
 
 ---
 
-**5. Docker** [Recommended]
+**3. Docker** [Recommended]
 Starts and controls isolated containers, which are sealed boxes where something can run without
 touching the rest of your machine. This is how you try a database, a tool, or a whole application
 and then throw it away cleanly.
@@ -828,7 +783,7 @@ instead of registering a broken entry.
 
 ---
 
-**6. GitHub** [Recommended]
+**4. GitHub** [Recommended]
 Creates the repository where your project lives, records every change with its history, opens and
 reviews change requests, and publishes releases. A repository is the place a project's files and their
 whole history live, so nothing is ever lost and every version can be recovered.
@@ -847,7 +802,7 @@ Before the first write to any repository, confirm which organization the work be
 
 ---
 
-**7. Railway**
+**5. Railway**
 Puts the parts of an application that run out of sight onto the internet: the database, the
 background job, the routine that fires at three in the morning. Through this connection the agent can
 deploy a service, read its logs, and restart what got stuck, without opening the Railway website.
@@ -862,7 +817,7 @@ claude mcp add --scope user railway -- railway mcp proxy
 
 ---
 
-**8. Supabase**
+**6. Supabase**
 Your application's database, with user login and access rules already solved. Through this connection
 the agent reads and changes data, applies structure changes, and points out what is left more open
 than it should be.
@@ -883,19 +838,7 @@ it unless the user explicitly asks for write access, and if they do, say plainly
 
 ---
 
-**9. Vercel**
-Publishes a website and gives it a real address for people to visit. Through this connection the
-agent publishes, shows which build failed and why, and reports the visitor numbers.
-Needs: a Vercel account, free tier covers small projects. Browser authorization, no token.
-Official source: https://vercel.com/docs/mcp/vercel-mcp
-
-```
-claude mcp add --scope user --transport http vercel https://mcp.vercel.com
-```
-
----
-
-**10. Cloudflare**
+**7. Cloudflare**
 Also publishes sites, and on top of that manages the address itself, the speed, and the rules that
 block unwanted traffic. Covers the whole Cloudflare account through one connection.
 Needs: a Cloudflare account, free tier covers domains and basic protection. Browser authorization.
@@ -907,7 +850,7 @@ claude mcp add --scope user --transport http cloudflare https://mcp.cloudflare.c
 
 ---
 
-**11. Metabase**
+**8. Metabase**
 Live dashboards built on top of your business database: revenue, stock, conversion funnel, whatever
 you need to see. Through this connection the agent builds the dashboard and answers questions
 against the numbers.
@@ -924,32 +867,7 @@ the permissions that user already has in Metabase.
 
 ---
 
-**12. Sentry**
-Tells you the moment your site breaks in somebody's hands, with the error log and the path that led
-to it. Through this connection the agent pulls the error that blew up in production and the code that
-caused it.
-Needs: a Sentry account, free tier covers small volume. Browser authorization.
-Official source: https://github.com/getsentry/sentry-mcp
-
-```
-claude mcp add --scope user --transport http sentry https://mcp.sentry.dev/mcp
-```
-
----
-
-**13. PostHog**
-Answers whether people actually used your site, where they got stuck, and what nobody ever opened.
-Through this connection the agent builds dashboards and queries those numbers directly.
-Needs: a PostHog account, free tier is generous. Browser authorization.
-Official source: https://github.com/PostHog/mcp
-
-```
-claude mcp add --scope user --transport http posthog https://mcp.posthog.com/mcp
-```
-
----
-
-**14. Higgsfield**
+**9. Higgsfield**
 Generates images and video through more than thirty specialized models gathered in one place.
 Through this connection the agent produces the asset without you opening the site.
 Needs: a Higgsfield account, paid by credits. Browser authorization, no key to manage.
@@ -977,11 +895,11 @@ active yet, and that happens right after the restart.
 Presented and answered together with Phases 3 and 5, in the single pass described in Section 4.1. The
 header text for this block lives there. This section is only the item detail and the commands.
 
-### 5.1 Items 15 through 18
+### 5.1 Items 10 through 13
 
 ---
 
-**15. Ponytail** [Recommended]
+**10. Ponytail** [Recommended]
 Makes the agent write the smallest thing that actually solves the problem. No leftover code, no extra
 library, no structure nobody asked for. This is the difference between something you can still
 understand in six months and something nobody dares to touch.
@@ -994,7 +912,7 @@ claude plugin install ponytail@ponytail
 
 ---
 
-**16. Matt Pocock skills** [Recommended]
+**11. Matt Pocock skills** [Recommended]
 A framework for building real software: diagnose the error before fixing it, write the test before
 the code, review every change. It is the discipline part, and it is what keeps a project from
 degrading as it grows.
@@ -1010,7 +928,7 @@ the real name and install with that instead.
 
 ---
 
-**17. Security Engineer** [Recommended]
+**12. Security Engineer** [Recommended]
 Makes the agent build secure projects from day one, layer by layer, choosing the cheapest protection
 that closes each real risk. It comes in on its own for anything that will be reachable from the
 internet or run in production, at the moment the project is created and again whenever login, payment,
@@ -1028,7 +946,7 @@ git clone https://github.com/bruno-org/security-engineer.git "$HOME/.claude/skil
 
 ---
 
-**18. Humanizer PT-BR** [Recommended for Portuguese speakers]
+**13. Humanizer PT-BR** [Recommended for Portuguese speakers]
 Takes the robot tone out of what the agent wrote and gives back rhythm, natural phrasing, and
 Portuguese that reads like a person wrote it. Install this whenever the user's language is Brazilian
 Portuguese.
@@ -1055,17 +973,13 @@ single verification pass happens in Phase 6. Do not run `claude plugin list` twi
 Presented and answered together with Phases 3 and 4, in the single pass described in Section 4.1. The
 header text for this block lives there. This section is only the item detail and the commands.
 
-When an item here needs Docker and the daemon is not answering, start Docker Desktop yourself using the
-command in Section 3.1 or 3.2, wait for it, and continue. Do not hand that back to the user.
-
 **Where the items in this phase get installed.** Two different destinations, and the difference matters:
 
 | Kind of item | Destination | Why |
 |--------------|-------------|-----|
-| A tool the **agent** uses, items 20 and 21 | `$HOME/.claude/tools/<name>/`, or `uv tool` for a CLI | The user never opens it directly |
-| An application the **user** opens and works in, items 19 and 23 | a folder named after the tool, on the resolved Desktop | The user has to be able to find it |
-| An application from a package manager, item 22 | wherever the package manager puts it | Not our call |
-| A multi container application, items 24 to 26 | wherever the project's official compose setup puts it | Follow the vendor |
+| A tool the **agent** uses, items 15 and 16 | `$HOME/.claude/tools/<name>/`, or `uv tool` for a CLI | The user never opens it directly |
+| An application the **user** opens and works in, items 14 and 18 | a folder named after the tool, on the resolved Desktop | The user has to be able to find it |
+| An application from a package manager, item 17 | wherever the package manager puts it | Not our call |
 
 Never run `git clone` without a destination path. Without one it clones into whatever directory the
 shell happens to be in, and neither the user nor a future session will find it. Resolve the Desktop
@@ -1076,11 +990,11 @@ Record the final path of everything installed here. Phase 8 writes it into
 `reference-optional-tools.md`, and a later session needs it to find the tool instead of installing a
 second copy.
 
-### 6.1 Items 19 through 28
+### 6.1 Items 14 through 18
 
 ---
 
-**19. Voice transcription**
+**14. Voice transcription**
 You speak, the text appears. Two options that solve the same thing:
 
 - **Wispr Flow**: works on any machine, has a limited free plan, paid beyond it.
@@ -1088,7 +1002,7 @@ You speak, the text appears. Two options that solve the same thing:
 - **Whisper Fogo**: free, runs entirely on your own machine, needs an NVIDIA graphics card.
   Official source: https://github.com/bruno-org/whisper-fogo
 
-`19a` is Wispr Flow, `19b` is Whisper Fogo. Wispr Flow is a normal application download from its site.
+`14a` is Wispr Flow, `14b` is Whisper Fogo. Wispr Flow is a normal application download from its site.
 
 For Whisper Fogo, clone into a named folder on the Desktop and run the installer from inside it. Replace
 `<DESKTOP>` with the resolved Desktop path:
@@ -1105,12 +1019,12 @@ cd "<DESKTOP>/Whisper Fogo"
 bash instalador/instalar.sh
 ```
 
-Check for an NVIDIA card before offering `19b`. Without one, say so and point to `19a` instead of
+Check for an NVIDIA card before offering `14b`. Without one, say so and point to `14a` instead of
 letting the install fail.
 
 ---
 
-**20. Watermarks Remover**
+**15. Watermarks Remover**
 Cleans the invisible marks AI leaves behind: hidden characters inside text and provenance data
 embedded in files. It matters when you hand work to a client, publish it, or send it as part of an
 application, because you decide what to disclose, not the tool that generated it.
@@ -1137,7 +1051,7 @@ verifiable and countable. It does not make text undetectable, and nobody should 
 
 ---
 
-**21. SkillSpector, by NVIDIA**
+**16. SkillSpector, by NVIDIA**
 NVIDIA's security scanner for agent skills. It runs a fine comb over a skill before you install it,
 looking for hidden instructions and code that steals data. A skill is a set of instructions your agent
 will follow, so installing one from a stranger without reading it carries the same risk as running a
@@ -1164,7 +1078,7 @@ Reading the report, in this order:
 
 ---
 
-**22. Obsidian**
+**17. Obsidian**
 Your notes and the agent's memory as plain text files you can see on your own machine, in folders you
 control. The agent reads and writes in them alongside you, and nothing is locked inside somebody
 else's product.
@@ -1180,12 +1094,12 @@ brew install --cask obsidian
 
 ---
 
-**23. Open Slide**
+**18. Open Slide**
 Presentations written by conversation instead of dragged into place. Two versions, and they are not
 interchangeable:
 
-- `23a` **Original**: https://github.com/1weiho/open-slide
-- `23b` **V2 fork**: moves and resizes elements on the canvas, exports editable PPTX, and resolves fonts
+- `18a` **Original**: https://github.com/1weiho/open-slide
+- `18b` **V2 fork**: moves and resizes elements on the canvas, exports editable PPTX, and resolves fonts
   on its own. https://github.com/bruno-org/OpenSlideV2
 
 Install exactly one. Clone it into a folder named `Open Slide` on the resolved Desktop, so there is a
@@ -1205,69 +1119,6 @@ that rule is only enforceable if the version and the path were written down here
 
 To start it later, `npm run dev` from that folder. Tell the user the address it prints, and that it only
 runs while that command is running.
-
----
-
-**24. ERPNext**
-A complete and free ERP: stock, finance, purchasing, and sales, with no per user license. This is the
-system that runs the operational side of a company.
-Official source: https://github.com/frappe/erpnext
-Needs Docker running. This is a multi container application, not a single install.
-
-Do not improvise the setup. Open the official deployment repository at
-https://github.com/frappe/frappe_docker, follow its current instructions, and tell the user up front
-that this takes real time and disk space.
-
----
-
-**25. Twenty**
-An open CRM built to work with AI: contacts, companies, deals, and pipeline. The alternative to
-Salesforce without the Salesforce bill.
-Official source: https://github.com/twentyhq/twenty
-Needs Docker running.
-
-Follow the official self hosting instructions in the repository. Same warning as item 24.
-
----
-
-**26. Chatwoot**
-One support inbox for everything: the chat widget on your site, email, and WhatsApp in the same
-place, with history per customer.
-Official source: https://github.com/chatwoot/chatwoot
-Needs Docker running.
-
-Follow the official self hosting instructions in the repository. Same warning as item 24.
-
----
-
-**27. Scrapling**
-Pulls data out of websites and adapts when the site moves things around, instead of simply breaking
-the way ordinary scraping does.
-Official source: https://github.com/D4Vinci/Scrapling
-Needs Python from Phase 2.
-
-```
-pip install "scrapling[fetchers]"
-scrapling install
-```
-
-On Windows, if `pip` is not found, use `py -m pip` instead. The second command downloads the browsers
-it drives, so it takes a few minutes.
-
----
-
-**28. n8n skills**
-Teaches the agent to build automations in n8n correctly, so you do not have to learn the tool before
-using it. Useful only if you already use n8n or intend to.
-Official source: https://github.com/czlonkowski/n8n-skills
-
-```
-claude plugin marketplace add czlonkowski/n8n-skills
-claude plugin install n8n-mcp-skills@n8n-skills
-```
-
-If that plugin name does not resolve, run `claude plugin marketplace add czlonkowski/n8n-skills`
-followed by `claude plugin list` to read the real name, and install with that.
 
 ---
 
@@ -1550,6 +1401,11 @@ present tense, with no reference to this setup having happened.
 - Maintaining memory is the agent's own standing job, in every project and every session, not a task
   the user has to request. The user should never have to say "remember this" for the obvious things.
   When they do ask, do it as well, but do not wait for it.
+- **Consult memory on your own, before being asked.** At the start of every session, look up the
+  memories relevant to what the user brings, before acting on it. Within a session, every time the
+  user steers the work into a new task or a new block of activity, check memory again for prior
+  knowledge about it before doing the work. The user may still point at a memory when they want,
+  but reading memory, like writing it, is the agent's own job to manage.
 - **Write a memory when any of these happens**, on the next pass after it happens:
   - A durable fact about the user surfaces: their role, their tools, how they work, what they prefer.
   - A durable fact about a project surfaces: its purpose, its constraints, a decision that will still
@@ -1585,27 +1441,29 @@ present tense, with no reference to this setup having happened.
 Include a rule only when its tool is actually present. A rule pointing at a tool that is not
 installed is worse than no rule, because it will be followed and fail.
 
-Ponytail, item 15, deliberately gets no rule here. It installs a `SessionStart` hook that injects its
+Ponytail, item 10, deliberately gets no rule here. It installs a `SessionStart` hook that injects its
 own ruleset at the beginning of every session, including into subagents, so it is already active
 without anything in `CLAUDE.md`. Restating it would only duplicate instructions that are already
 loaded. Do not add one.
 
-**If item 21, SkillSpector, was installed:**
+**If item 16, SkillSpector, was installed:**
 
-- Before installing any skill, plugin, subagent, slash command, or MCP server that came from outside
-  this machine, validate it first with `skillspector scan <target>`. Validation comes before
-  installation, not after.
-- This covers anything from a public repository, a link somebody sent, or a marketplace. It does not
-  cover a skill the user wrote themselves, and it does not cover ordinary application dependencies
-  such as an npm or pip library.
-- Read the report in this order: coverage first, and if coverage is not near 100 percent the result
+- Detect the opportunity on your own: whenever a skill, plugin, subagent, slash command, or MCP
+  server that came from outside this machine is about to be installed, offer the scan in one line
+  before installing. This covers anything from a public repository, a link somebody sent, or a
+  marketplace. It does not cover a skill the user wrote themselves, and it does not cover ordinary
+  application dependencies such as an npm or pip library.
+- Never run the scan on your own. The offer puts the decision in the user's hands: they say yes, it
+  runs with `skillspector scan <target>` before the install; they say no, the install proceeds
+  without it and the subject is dropped for that item.
+- When it does run, read the report in this order: coverage first, and if coverage is not near 100 percent the result
   is invalid and must be run again. Score second: LOW installs, MEDIUM means read every finding and
   show them to the user, HIGH or CRITICAL means do not install and bring the findings to the user.
 - Never report the score alone. Open every flagged line and say what it actually is. Static analysis
   produces false positives on legitimate skills.
 - The user makes the final call in every case.
 
-**If item 18, Humanizer PT-BR, was installed:**
+**If item 13, Humanizer PT-BR, was installed:**
 
 - When **writing** natural language content in Portuguese that a person will read, articles, reports,
   documents, `.txt`, `.docx`, `.pdf`, spreadsheets, posts, email, website copy, use the
@@ -1621,24 +1479,20 @@ loaded. Do not add one.
 - This never applies to code, commands, identifiers, file paths, or quoted material, which stay
   exactly as they are.
 
-**If item 20, Watermarks Remover, was installed:**
+**If item 15, Watermarks Remover, was installed:**
 
 What it is, in one sentence for the user: it strips the metadata and hidden characters that identify a
 file as having been produced by artificial intelligence.
 
-It does **not** run on everything. Three tiers, and the tier is decided by what the file is for:
+It never runs on its own. The agent detects the opportunity, offers, and the user decides:
 
-- **Always, on explicit request.** The user asks to clean a file, strip watermarks, remove metadata,
-  or check a file for AI marks. Run it on whatever they point at, whoever wrote it.
-- **Always, without asking, on human facing work documents.** A deliverable that a person receives and
-  reads as a document: `.txt`, `.pdf`, `.docx`, `.odt`, `.xlsx`, `.csv`, and images, `.png`, `.jpg`,
-  `.jpeg`, `.webp`. This is a report, a proposal, a spreadsheet, a letter, a presentation, an
-  application, an article, a generated image. These are the files where provenance metadata leaks
-  authorship in a way that is nobody's business, so clean before saying it is ready.
-- **Never automatically, on technical artifacts.** Source code, `.md` files that belong to a project,
-  skills, agent definitions, prompts, configuration, and anything that lives in a repository. Being
-  visibly AI assisted is not a problem there, and cleaning it uninvited touches files the user may be
-  versioning. You may **offer** it in one line. If they do not say yes, do not run it.
+- **Detect and offer.** Whenever a deliverable meant for a person to read is about to be handed
+  over, a report, a proposal, a spreadsheet, a letter, a presentation, an article, a generated
+  image, or any other file that may carry AI provenance marks, offer the cleanup in one line before
+  calling the work done.
+- **Run only on a yes.** The user accepts the offer, or asks directly to clean a file, strip
+  watermarks, remove metadata, or check a file for AI marks. If they decline, deliver the file as
+  it is and drop the subject for that file.
 
 Flow when it does run: run the cleaner over the file, run the inspection mode to confirm nothing is
 left, and only then report the file as ready, telling the user literally what was removed, without
@@ -1666,7 +1520,7 @@ character, a non breaking space, or an exotic space inside text.
 - Never remove the `--user-data-dir` argument from the Playwright MCP configuration. It is what keeps
   a browser login alive between sessions. Without it, every run starts logged out.
 
-**If item 5, Docker, was installed:**
+**If item 3, Docker, was installed:**
 
 - Whenever an application would be better off running in a container, which is the case for almost
   anything with a database, a web service, a background worker, or a self hosted tool, run it in a
@@ -1687,7 +1541,7 @@ character, a non breaking space, or an exotic space inside text.
 - Say in one plain sentence what you are doing and why, without jargon: "this runs in an isolated box
   so it does not touch the rest of your machine." Do not narrate container internals.
 
-**If items 6 through 14, any service MCP, were installed:**
+**If items 4 through 9, any service MCP, were installed:**
 
 - Many people keep more than one account on the same service, a personal one and a work one, and the
   separation is intentional. Never assume the account currently authorized is the right one for the
@@ -1699,12 +1553,12 @@ character, a non breaking space, or an exotic space inside text.
   affects production, show the user which account is about to be used and get confirmation, even when
   it looks obvious.
 
-**If item 22, Obsidian, was installed:**
+**If item 17, Obsidian, was installed:**
 
 - Memory files are plain Markdown the user can open in Obsidian. Keep wiki style links, `[[name]]`,
   and never convert them to standard Markdown links, that breaks the graph.
 
-**If item 23, Open Slide, was installed:**
+**If item 18, Open Slide, was installed:**
 
 - Any request for a presentation, slides, a deck, a talk, or a pitch uses Open Slide by default,
   unless the user names another tool. Do not ask which tool, and do not improvise a substitute. If
@@ -1719,7 +1573,7 @@ character, a non breaking space, or an exotic space inside text.
 - When both are present on the machine, the version the project itself uses wins. Ask only if the
   project does not make it clear.
 
-**If item 16, Matt Pocock skills, were installed:**
+**If item 11, Matt Pocock skills, were installed:**
 
 - These skills are triggered by recognizing the situation, and their own descriptions expect wording a
   non technical user will never type. So map the situation yourself instead of waiting for the keyword:
@@ -1730,7 +1584,7 @@ character, a non breaking space, or an exotic space inside text.
   `resolving-merge-conflicts`; stress testing a plan goes to `grilling`; writing or editing a skill,
   an `AGENTS.md`, or a `CLAUDE.md` goes to `writing-for-agents`.
 
-**If item 17, Security Engineer, was installed:**
+**If item 12, Security Engineer, was installed:**
 
 - Bring the `security-engineer` skill in, without being asked, whenever the project will be reachable
   from the internet or will run in production. That includes anything published to a real address,

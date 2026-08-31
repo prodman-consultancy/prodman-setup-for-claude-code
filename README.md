@@ -27,16 +27,16 @@ treatment: absent means install, present and current means leave it alone, prese
 propose an upgrade in place. It never installs over a working version and never reinstalls to "fix"
 something.
 
-**Installs the base only if it is missing.** Node.js, Git, Python, uv, Docker Desktop, Google Chrome,
+**Installs the base only if it is missing.** Node.js, Git, Python, uv, Docker Desktop,
 VS Code. Always from the vendor's current official source, never a bundled installer.
 
-**Offers 28 optional items in one menu**, in three groups, answered in a single reply:
+**Offers 18 optional items in one menu**, in three groups, answered in a single reply:
 
 | Group | What it covers |
 |-------|----------------|
-| Connections, 1 to 14 | Browser automation, web search, site diagnostics, Google Workspace, Docker, GitHub, Railway, Supabase, Vercel, Cloudflare, Metabase, Sentry, PostHog, Higgsfield |
-| Working methods, 15 to 18 | Minimal-code discipline, engineering practice, security by default, Brazilian Portuguese writing |
-| Separate tools, 19 to 28 | Voice transcription, metadata cleaning, skill security scanning, notes, presentations, ERP, CRM, support inbox, scraping, workflow automation |
+| Connections, 1 to 9 | Browser automation, Google Workspace, Docker, GitHub, Railway, Supabase, Cloudflare, Metabase, Higgsfield |
+| Working methods, 10 to 13 | Minimal-code discipline, engineering practice, security by default, Brazilian Portuguese writing |
+| Separate tools, 14 to 18 | Voice transcription, metadata cleaning, skill security scanning, notes, presentations |
 
 Each item explains, in plain language, what it does for you, what you need to have before it works, and
 whether it costs anything. Nothing is installed for a service you do not have an account on.
