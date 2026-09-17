@@ -10,6 +10,11 @@ memories. Everything it installs is installed globally, for every project and ev
 
 ## Section 0. How to use this file
 
+**Before you start, put Claude Code on its strongest setting.** In the conversation, send `/model opus`
+and then `/effort max`. This run audits your machine, installs software, edits configuration files, and
+drives a browser through administrative screens. On a smaller model or a lower effort level it produces
+a run that looks finished and is not. Both settings stay until you change them back the same way.
+
 **For the person holding this file:** open Claude Code (VS Code extension or terminal), paste this
 file into the conversation or point the agent at its path, and say "run this setup." Then answer the
 questions. Nothing is installed without your confirmation. At one or two points you will be asked to
@@ -25,6 +30,7 @@ Execution order, fixed:
 
 | Phase | What happens | Skippable |
 |-------|--------------|-----------|
+| 0 | Confirm the model and the effort level | No |
 | 1 | Audit the machine and report findings | No |
 | 2 | Install the missing required base | No |
 | 3, 4, 5 | One menu of 18 items, one answer, then install what was picked, in that order. May include one restart in the middle when browser assistance is needed | Yes, the user may pick none |
@@ -42,6 +48,64 @@ memory written before the work finishes records something that is not true yet.
 ## Section 1. Operating rules for the agent
 
 Read this section first. It governs every phase.
+
+### 1.0 Phase 0, the model and the effort level
+
+Before the audit, before anything: this run needs the strongest model the user has and the highest
+effort level. It is a gate, not a preference. This run installs software, edits configuration files,
+drives administrative screens in a browser, and writes the rules every future session on this machine
+will follow. A cheaper model gets most of it right and quietly leaves behind an MCP entry that never
+starts, a half written `CLAUDE.md`, or a memory recording something that did not happen. The user finds
+out weeks later, with no idea why.
+
+**The target: model `opus`, effort level `max`.** Opus is included in every plan, from Pro upward, so
+there is no account where this is out of reach and no reason to settle for less. If the user would
+rather use another current top tier model they have access to, accept that and keep the effort at
+`max`. Never run this on a small model.
+
+**Check, in this order:**
+
+1. The model of the session in progress is stated in your own context. Read it there.
+2. The stored defaults are in `$HOME/.claude/settings.json`, keys `model` and `effortLevel`.
+3. Whether this build has the effort level at all: `claude --help` lists `--effort` when it does, with
+   the accepted levels `low`, `medium`, `high`, `xhigh`, `max`.
+
+The effort level of a session already running cannot be read with certainty, because the user may have
+changed it after the session started. When there is no proof it is at `max`, ask for it anyway. Typing
+it a second time costs nothing.
+
+**If either one is below target, stop and ask for exactly this, then wait:**
+
+```
+/model opus
+/effort max
+```
+
+Both take effect immediately, in the session already open, with no restart. Say why in one line: the
+strongest model and the deepest reasoning, because this run changes the machine. Do not start Phase 1
+until they are set.
+
+**If the user will not or cannot type them**, write the stored defaults instead and use the restart
+protocol in Section 1.9, because a stored default only applies to a session started after it. Merge
+these two keys into `$HOME/.claude/settings.json`, preserving everything else in the file:
+
+```json
+{
+  "model": "opus",
+  "effortLevel": "max"
+}
+```
+
+**If `/model opus` comes back refused**, the cause is not the plan. Look at the build and at any
+managed settings the organization applies, say what you found in one line, and use the strongest
+model that account does accept, still at `/effort max`.
+
+**If the build is too old to have `--effort`**, say so in one line, ask for `/model opus` alone, and
+carry on. Never block a run over a flag that version does not have.
+
+**Say it once.** Once the settings are in place, move on and do not mention the model again for the
+rest of the run. Tell the user in the same breath that both stay until they change them back with
+`/model` and `/effort`, so somebody who wants a cheaper default afterwards knows how to get it.
 
 ### 1.1 Interaction style and pace
 
@@ -410,7 +474,7 @@ test -f "$HOME/.claude/CLAUDE.md" && echo "CLAUDE.md: exists" || echo "CLAUDE.md
 | npm | ships with Node | Used by `npx`, which most MCP servers run through |
 | Git | 2.30 | Used to install standalone skills and plugin marketplaces |
 | Python | 3.11 | Floor for `uv` managed tools |
-| uv | current | Runs the Docker MCP and installs SkillSpector |
+| uv | current | Installs SkillSpector and any other Python command line tool |
 | Docker Desktop | current | Must be installed **and** the daemon must answer |
 | VS Code | current | Where the user works |
 | Claude Code | current | Must be installed and signed in |
@@ -608,10 +672,119 @@ adding is correct, because the configuration itself is what is wrong.
 Check only the rows this phase touched, not the whole battery again. Everything that was already fine
 in Phase 1 is still fine, and re running it costs tokens for no information.
 
-Report the corrected rows in one compact line each, then move to Phase 3.
+Report the corrected rows in one compact line each. Docker gets one more check of its own, in Section
+3.6, and Phase 3 does not start until that check passes or the user decides to go on without Docker.
 
 If Claude Code is not signed in, stop and have the user run `claude` and complete the login. Nothing
 in Phases 3 through 8 works without it.
+
+### 3.6 Docker has to prove it runs
+
+Docker is the one component that is routinely installed and still not working. It needs virtualization
+switched on in the firmware, a couple of Windows features enabled, and a Linux kernel that ships
+separately from Docker itself, and any of the three can be off on a machine that looks fine otherwise.
+Installed proves nothing here.
+
+The one case that skips this section is a user who declined the Docker install in Phase 2. Record
+that, drop item 3 and anything else that needs Docker from what you offer in Phase 3, and move on.
+Everything else runs the proof:
+
+```
+docker run --rm hello-world
+```
+
+It passed when the output carries "Hello from Docker!". Clean up after yourself, because that image
+has no further use and the user did not ask for it:
+
+```
+docker rmi hello-world
+```
+
+Then one line, "Docker runs containers, confirmed", and on to Phase 3. Do not paste the hello world
+output to the user.
+
+**When it fails, it gets fixed here, in this run, with the user in the chair.** Not in another session,
+not by somebody else later, and never by carrying on as though Docker were fine. Work it in this order.
+
+**First, read the machine instead of guessing.** These are read only and none of them needs an
+administrator:
+
+```powershell
+docker info
+wsl --status
+(Get-CimInstance Win32_ComputerSystem).HypervisorPresent
+(Get-CimInstance Win32_Processor).VirtualizationFirmwareEnabled
+Get-CimInstance Win32_OptionalFeature -Filter "Name='VirtualMachinePlatform' OR Name='Microsoft-Windows-Subsystem-Linux'" | Select-Object Name, InstallState
+(Get-Service com.docker.service -ErrorAction SilentlyContinue).Status
+net localgroup docker-users
+```
+
+```bash
+docker info
+pgrep -x Docker || echo "Docker Desktop is not running"
+```
+
+Reading those correctly matters more than running them:
+
+- `InstallState` of `1` means the feature is enabled, `2` means disabled, `3` means not present.
+- **`HypervisorPresent` true means virtualization is working, full stop.** Do not send anybody into
+  their firmware on the strength of `VirtualizationFirmwareEnabled` alone: once a hypervisor is
+  running, Windows reports that property as false on a machine where virtualization is perfectly
+  enabled. The firmware is only a suspect when `HypervisorPresent` is false.
+- Run the `wsl` commands from PowerShell. Their output is UTF-16 and turns into unreadable spacing
+  when piped through a POSIX shell.
+
+**Then match the symptom to the cause.** Read the actual error text, do not pick a row by category:
+
+| What the failure looks like | What it is | The fix |
+|------------------------------|------------|---------|
+| `docker` is not recognized as a command | The PATH in this shell predates the install | The PATH refresh in Section 3.1, and reopen the shell if that is not enough |
+| `error during connect`, `The system cannot find the file specified`, `Cannot connect to the Docker daemon` | Docker Desktop is not running | Start it with the command in Section 3.1 or 3.2, then poll `docker info` for up to two minutes |
+| Any message naming WSL, or `wsl --update` | The WSL 2 kernel is missing or old | `wsl --update`, then `wsl --set-default-version 2`. If WSL was never installed, `wsl --install`. Both need an administrator |
+| Any message naming Hyper-V or Virtual Machine Platform | A Windows feature is off | Enable it, as an administrator, then reboot |
+| Any message naming virtualization, VT-x, AMD-V, or SVM, **and** `HypervisorPresent` is false | Virtualization is off in the firmware | The firmware procedure below |
+| `Access is denied`, or the daemon answers for an administrator and not for the user | The user is not in the `docker-users` group | Add them, as an administrator, then sign out and back in |
+| The service is `Stopped` and will not start | Docker Desktop needs a repair or an upgrade | Upgrade in place per Section 3.4 before considering anything else |
+| macOS, the daemon never answers | Docker Desktop was not started, or is waiting on a permission dialog | `open -a Docker`, then look for the dialog asking for privileged access and have the user accept it |
+
+**The commands that need an administrator.** Elevation started from inside Claude Code frequently does
+not work, because Windows shows the prompt on a separate secure desktop. Do not fight it: give the user
+one command at a time, ask them to run it in a PowerShell opened with "Run as administrator", and wait
+for them to report the result before sending the next one.
+
+```powershell
+wsl --update
+wsl --set-default-version 2
+Enable-WindowsOptionalFeature -Online -FeatureName VirtualMachinePlatform -NoRestart
+Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart
+net localgroup docker-users "$env:USERNAME" /add
+```
+
+**The firmware procedure, when and only when the readings point there.** Say plainly what it is: a
+setting in the machine's own startup screen, outside Windows, that has to be switched on once. Then:
+
+1. Get them into the firmware without guessing a key, through Windows itself: Settings, System,
+   Recovery, Advanced startup, Restart now. Then Troubleshoot, Advanced options, UEFI Firmware
+   Settings, Restart. Older machines without that entry use a key pressed at power on, which is F2 on
+   Dell and Asus, F10 or Esc on HP, F1 or F2 on Lenovo, F2 on Acer, and Del on most desktop boards.
+2. Tell them what to look for, because every vendor names it differently: Intel VT-x, Intel
+   Virtualization Technology, AMD-V, or SVM Mode, usually under Advanced, CPU Configuration,
+   Processor, or Security.
+3. Switch it to Enabled, save and exit, which is usually F10, and let the machine boot.
+4. **Write the checkpoint before they restart**, following Section 1.9, and record that the run is
+   waiting on a firmware change and that the next step is the hello world proof. Tell them how to come
+   back: open Claude Code and send any message.
+5. When they are back, run the proof again. Do not re audit the machine and do not ask for the menu
+   selection again.
+
+**After every fix, run the proof again.** That is the only thing that closes this section. A feature
+that reports as enabled is not evidence, and neither is a service that reports as running.
+
+**Do not repeat a fix that already failed, and do not loop forever.** After three genuine attempts on
+different causes, stop: tell the user exactly where it stands and what the last error was, ask whether
+to go on without Docker, and if they say yes, drop item 3 and anything else that depends on it from the
+selection and record the whole thing in `reference-pending-setup-items.md` in Phase 8, with the error
+text and the next step. Everything that does not need Docker still gets installed.
 
 ---
 
@@ -794,32 +967,56 @@ stop and tell the user exactly what Google asked for. Do not try to work around 
 
 ---
 
-**3. Docker** [Recommended]
-Starts and controls isolated containers, which are sealed boxes where something can run without
-touching the rest of your machine. This is how you try a database, a tool, or a whole application
-and then throw it away cleanly.
-Needs: Docker Desktop installed and running, plus `uv` from Phase 2. Free.
-Official source: https://github.com/QuantGeekDev/docker-mcp
+**3. Docker MCP Toolkit** [Recommended]
+A catalog of ready made connections, each one running inside its own container. The agent finds what a
+job needs, switches it on, uses it, and the machine keeps nothing afterwards: nothing installed,
+nothing left behind, nothing conflicting with what is already there.
+Needs: Docker Desktop, current and proven by Section 3.6. Free.
+Official source: https://github.com/docker/mcp-gateway
+
+The toolkit ships inside Docker Desktop, so there is nothing to install first. Confirm it is there:
 
 ```
-claude mcp add --scope user docker -- uvx docker-mcp
+docker mcp version
 ```
 
-**Write the absolute path to `uvx`, not the bare name.** The MCP server is started by Claude Code, not
-by your shell, and it does not always inherit the shell's PATH. A bare `uvx` works when you test it and
-then fails at startup. Resolve it first and register that path:
+If that is not recognized, Docker Desktop is older than the toolkit or the feature is switched off.
+Upgrade it in place per Section 3.4, or switch the MCP Toolkit on in Docker Desktop's settings, and
+check again. Do not register anything until that command answers.
+
+Then register the gateway. This is the command from Docker's own guide for Claude Code, written with
+the scope flag this runbook uses everywhere:
+
+```
+claude mcp add MCP_DOCKER --scope user -- docker mcp gateway run
+```
+
+**Keep the name `MCP_DOCKER`.** Docker's documentation, its interface, and every guide written around
+it use that name, so renaming it turns every instruction the user ever reads into a translation
+exercise.
+
+Two other official paths write the same entry, for somebody who would rather not run a command:
+`docker mcp client connect claude-code --global`, or the Connect button beside Claude Code in Docker
+Desktop, under MCP Toolkit, Clients. Use one of the three, never two.
+
+**What this is not.** The gateway does not create, start, or stop containers on the user's behalf.
+Running the user's own application in a container is the `docker` command in the terminal, which the
+agent already has and needs no connection for. This item is about tools, not about driving the daemon.
+
+**If the server does not come up after the restart in Phase 6**, register the absolute path to `docker`
+instead of the bare name. The MCP server is started by Claude Code, not by your shell, and it does not
+always inherit the shell's PATH:
 
 ```powershell
-$uvx = (Get-Command uvx).Source
-claude mcp add --scope user docker -- $uvx docker-mcp
+$docker = (Get-Command docker).Source
+claude mcp remove MCP_DOCKER --scope user
+claude mcp add MCP_DOCKER --scope user -- $docker mcp gateway run
 ```
 
 ```bash
-claude mcp add --scope user docker -- "$(command -v uvx)" docker-mcp
+claude mcp remove MCP_DOCKER --scope user
+claude mcp add MCP_DOCKER --scope user -- "$(command -v docker)" mcp gateway run
 ```
-
-If `uvx` is not on the PATH at all, the `uv` install from Phase 2 did not complete. Fix that first
-instead of registering a broken entry.
 
 ---
 
@@ -1623,13 +1820,18 @@ character, a non breaking space, or an exotic space inside text.
 - Never remove the `--user-data-dir` argument from the Playwright MCP configuration. It is what keeps
   a browser login alive between sessions. Without it, every run starts logged out.
 
-**If item 3, Docker, was installed:**
+**If item 3, the Docker MCP Toolkit, was installed:**
 
 - Whenever an application would be better off running in a container, which is the case for almost
   anything with a database, a web service, a background worker, or a self hosted tool, run it in a
-  container through the Docker MCP instead of installing it directly onto the machine. Decide this
-  yourself. The user should not have to know what a container is, or be asked to choose.
-- Docker Desktop must be running for that to work. When `docker info` fails or an MCP call fails
+  container instead of installing it onto the machine. That is the `docker` command in the terminal,
+  and you decide it yourself. The user should not have to know what a container is, or be asked to
+  choose.
+- **The `MCP_DOCKER` connection is for tools, not for containers.** When a job needs a capability you
+  do not have, search the catalog through that connection and switch on the server that covers it,
+  instead of installing another tool onto the machine. Each one runs in its own container and leaves
+  nothing behind when the job is done.
+- Docker Desktop must be running for either of those. When `docker info` fails or an MCP call fails
   because the daemon is not answering, **start Docker Desktop yourself**, wait for the daemon to come
   up, and then continue through the MCP. Do not stop and hand the problem to the user.
 
