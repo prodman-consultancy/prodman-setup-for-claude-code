@@ -10,13 +10,12 @@ memories. Everything it installs is installed globally, for every project and ev
 
 ## Section 0. How to use this file
 
-**Before you start, put Claude Code on its strongest setting.** Send `/model opus` on its own, wait for
-it to land, then send `/effort ultracode`, also on its own. One command per message: two in the same
-message are read as a single command and come back as an error. Then send any ordinary message, `ok` is
-enough, because a slash command changes your setting without waking the agent up. This run audits your
-machine, installs software, edits configuration files, and drives a browser through administrative
-screens. On a smaller model or a lower effort setting it produces a run that looks finished and is not.
-Both settings stay until you change them back the same way.
+**Before you start, put Claude Code on its strongest setting.** At the bottom of the box where you
+type, you can see which model is running and at what effort, something like "Sonnet 5 Extra high".
+Click there, choose Opus for the model and ultracode for the effort. This run audits your machine,
+installs software, edits configuration files, and drives a browser through administrative screens. On a
+smaller model or a lower effort setting it produces a run that looks finished and is not. Both settings
+stay until you change them back the same way.
 
 **For the person holding this file:** open Claude Code (VS Code extension or terminal), paste this
 file into the conversation or point the agent at its path, and say "run this setup." Then answer the
@@ -77,25 +76,31 @@ and keep the effort where it is. Never run this on a small model.
    the `/effort` command inside a session.
 
 The effort level of a session already running cannot be read with certainty, because the user may have
-changed it after the session started. When there is no proof, ask for it anyway. Typing it a second
-time costs nothing.
+changed it after the session started. When there is no proof, ask anyway. It costs the user nothing to
+confirm.
 
-**If either one is below target, give the user all three steps at once, before they start.** A slash
-command changes the session and never reaches you: you get no turn out of it, so a person who sends
-`/model opus` and waits is looking at a screen that has stopped, with nothing telling them what to do.
-Two slash commands in one message do not work either, because Claude Code reads the whole message as a
-single command and answers that the model was not found. So hand them the sequence, in one block:
+**If either one is below target, point at the control on their screen and let them use it.** Do not
+hand somebody a list of commands to copy. They copy the whole block, it arrives as one message, nothing
+works, and now they are stuck on step one of a setup they just paid for.
 
-```
-1. /model opus
-2. /effort ultracode
-3. any message, "ok" is enough, so I can pick up from here
-```
+The model and the effort level are written at the bottom of the message box, something like
+"Sonnet 5 Extra high", and clicking there opens the picker for both. Say it in two or three plain
+sentences, in their language, along these lines:
 
-Say the three things that make it work, in one line each: one command per message, the second only
-after the first lands, and the last step is an ordinary message, because a slash command alone leaves
-the conversation waiting on you while you are waiting on it. Both settings take effect immediately, in
-the session already open, with no restart. Do not start Phase 1 until both are set.
+> At the bottom of the box where you type, you can see which model is running and at what effort,
+> something like "Sonnet 5 Extra high". Click there, choose Opus for the model and ultracode for the
+> effort. Then write me a message saying it is done, anything at all, and I carry on from there.
+
+**That last sentence is not decoration.** Changing the setting never reaches you: it produces no turn,
+so if they change it and wait, the conversation sits still with each side waiting on the other. They
+have to write something for the run to resume, and they only know that if you tell them.
+
+Only if they ask for a typed way, or cannot find the control, mention that `/model opus` and
+`/effort ultracode` do the same thing, one per message, never both in one. Leading with the commands is
+what creates the dead end above.
+
+Both settings take effect immediately, in the session already open, with no restart. Do not start
+Phase 1 until both are set.
 
 **If `/effort ultracode` is refused**, an organization policy is capping it, and `xhigh` is the
 practical ceiling there. Say so in one line, ask for `/effort max` instead, and carry on.
