@@ -66,9 +66,10 @@ para memória, apenas qual serviço e qual conta.
 Claude Code, autenticado, no Windows ou no macOS. O resto o roteiro instala para você, se estiver
 faltando.
 
-Rode na configuração mais forte que você tiver: mande `/model opus`, depois `/effort max`, um por
-mensagem, antes de começar. O roteiro confere as duas coisas antes de tocar na máquina e pede o ajuste
-se estiverem abaixo disso, porque aqui ele instala software e escreve configuração, não é conversa.
+Rode na configuração mais forte que você tiver: mande `/model opus`, depois `/effort ultracode`, um por
+mensagem, e então qualquer mensagem comum para começar. O roteiro confere as duas coisas antes de tocar
+na máquina e pede o ajuste se estiverem abaixo disso, porque aqui ele instala software e escreve
+configuração, não é conversa.
 
 ## Licença
 

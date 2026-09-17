@@ -66,9 +66,10 @@ into a memory, only which service and which account.
 Claude Code, signed in, on Windows or macOS. Everything else the runbook installs for you if it is
 missing.
 
-Run it on the strongest setting you have: send `/model opus`, then `/effort max`, one per message,
-before you start. The runbook checks both before it touches the machine and asks you to fix them if
-they are lower, because this is a run that installs software and writes configuration, not a chat.
+Run it on the strongest setting you have: send `/model opus`, then `/effort ultracode`, one per
+message, then any ordinary message to get going. The runbook checks both before it touches the machine
+and asks you to fix them if they are lower, because this is a run that installs software and writes
+configuration, not a chat.
 
 ## License
 

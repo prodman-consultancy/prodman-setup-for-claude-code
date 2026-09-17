@@ -10,11 +10,12 @@ memories. Everything it installs is installed globally, for every project and ev
 
 ## Section 0. How to use this file
 
-**Before you start, put Claude Code on its strongest setting.** In the conversation, send `/model opus`
-on its own, wait for it to land, then send `/effort max`, also on its own. One per message: two slash
-commands in the same message are read as a single command and come back as an error. This run audits
-your machine, installs software, edits configuration files, and drives a browser through administrative
-screens. On a smaller model or a lower effort level it produces a run that looks finished and is not.
+**Before you start, put Claude Code on its strongest setting.** Send `/model opus` on its own, wait for
+it to land, then send `/effort ultracode`, also on its own. One command per message: two in the same
+message are read as a single command and come back as an error. Then send any ordinary message, `ok` is
+enough, because a slash command changes your setting without waking the agent up. This run audits your
+machine, installs software, edits configuration files, and drives a browser through administrative
+screens. On a smaller model or a lower effort setting it produces a run that looks finished and is not.
 Both settings stay until you change them back the same way.
 
 **For the person holding this file:** open Claude Code (VS Code extension or terminal), paste this
@@ -60,56 +61,61 @@ will follow. A cheaper model gets most of it right and quietly leaves behind an 
 starts, a half written `CLAUDE.md`, or a memory recording something that did not happen. The user finds
 out weeks later, with no idea why.
 
-**The target: model `opus`, effort level `max`.** Opus is included in every plan, from Pro upward, so
-there is no account where this is out of reach and no reason to settle for less. If the user would
-rather use another current top tier model they have access to, accept that and keep the effort at
-`max`. Never run this on a small model.
+**The target: model `opus`, effort level `ultracode`.** Opus is included in every plan, from Pro
+upward, so there is no account where this is out of reach and no reason to settle for less.
+`ultracode` is the top of the effort setting: it runs at `xhigh` and adds standing workflow
+orchestration on top, which is why it outranks the plain levels even though the scale itself ends at
+`max`. If the user would rather use another current top tier model they have access to, accept that
+and keep the effort where it is. Never run this on a small model.
 
 **Check, in this order:**
 
 1. The model of the session in progress is stated in your own context. Read it there.
 2. The stored defaults are in `$HOME/.claude/settings.json`, keys `model` and `effortLevel`.
-3. Whether this build has the effort level at all: `claude --help` lists `--effort` when it does, with
-   the accepted levels `low`, `medium`, `high`, `xhigh`, `max`.
+3. Whether this build has the effort setting at all: `claude --help` lists `--effort` when it does,
+   with the levels `low`, `medium`, `high`, `xhigh`, `max`. The `ultracode` setting is reached from
+   the `/effort` command inside a session.
 
 The effort level of a session already running cannot be read with certainty, because the user may have
-changed it after the session started. When there is no proof it is at `max`, ask for it anyway. Typing
-it a second time costs nothing.
+changed it after the session started. When there is no proof, ask for it anyway. Typing it a second
+time costs nothing.
 
-**If either one is below target, ask for one command at a time, and wait for each one.** Two slash
-commands in the same message do not work. Claude Code reads the whole message as a single command and
-answers that the model was not found, which reads like a failure to somebody who did exactly what you
-asked. So ask for this one, by itself:
-
-```
-/model opus
-```
-
-Once that lands, ask for this one, also by itself:
+**If either one is below target, give the user all three steps at once, before they start.** A slash
+command changes the session and never reaches you: you get no turn out of it, so a person who sends
+`/model opus` and waits is looking at a screen that has stopped, with nothing telling them what to do.
+Two slash commands in one message do not work either, because Claude Code reads the whole message as a
+single command and answers that the model was not found. So hand them the sequence, in one block:
 
 ```
-/effort max
+1. /model opus
+2. /effort ultracode
+3. any message, "ok" is enough, so I can pick up from here
 ```
 
-Say it in the request, in one short line: one per message, and send the second only after the first
-comes back. Both take effect immediately, in the session already open, with no restart. Say why in one
-line too: the strongest model and the deepest reasoning, because this run changes the machine. Do not
-start Phase 1 until both are set.
+Say the three things that make it work, in one line each: one command per message, the second only
+after the first lands, and the last step is an ordinary message, because a slash command alone leaves
+the conversation waiting on you while you are waiting on it. Both settings take effect immediately, in
+the session already open, with no restart. Do not start Phase 1 until both are set.
+
+**If `/effort ultracode` is refused**, an organization policy is capping it, and `xhigh` is the
+practical ceiling there. Say so in one line, ask for `/effort max` instead, and carry on.
 
 **If the user will not or cannot type them**, write the stored defaults instead and use the restart
 protocol in Section 1.9, because a stored default only applies to a session started after it. Merge
-these two keys into `$HOME/.claude/settings.json`, preserving everything else in the file:
+these keys into `$HOME/.claude/settings.json`, preserving everything else in the file. Note that
+`ultracode` is session scoped, so the stored form is the effort level alone, and the user still gets
+the most from the command:
 
 ```json
 {
   "model": "opus",
-  "effortLevel": "max"
+  "effortLevel": "xhigh"
 }
 ```
 
 **If `/model opus` comes back refused**, the cause is not the plan. Look at the build and at any
 managed settings the organization applies, say what you found in one line, and use the strongest
-model that account does accept, still at `/effort max`.
+model that account does accept, with the effort setting still at the top.
 
 **If the build is too old to have `--effort`**, say so in one line, ask for `/model opus` alone, and
 carry on. Never block a run over a flag that version does not have.
