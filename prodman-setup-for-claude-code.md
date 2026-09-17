@@ -262,8 +262,12 @@ Confirm before installing anything. Confirm again, separately, before anything t
 resource, touches a credential, or writes outside `~/.claude/` and the user's chosen install
 locations.
 
-When one item fails, do not abort the run. Record the failure, tell the user in one line, move to the
-next item, and list every failure in the Phase 6 report.
+When one item fails for a reason that is outside this machine, a service that is down, an account
+that does not exist, a vendor page that changed shape, do not abort the run. Record the failure, tell
+the user in one line, move to the next item, and list every failure in the Phase 6 report.
+
+**A missing dependency is not that kind of failure**, and it does not get recorded and skipped.
+Section 1.12 covers it: stop, install what is missing, and finish the item.
 
 Never ask the user to paste a password. Never echo a full credential back to the screen. When
 confirming, show at most the first six characters. Section 1.8 covers how to get a credential.
@@ -405,6 +409,43 @@ did not come from here, the scan is offered. Inside this run it is never offered
 Scanning the setup would stop the install to ask the user to approve what they just chose, from a
 report whose findings are ordinary instruction text, and that is noise, not security.
 
+### 1.12 A missing dependency gets installed, never skipped
+
+Everything the user is getting, the required base and every optional item they picked, has to end up
+working. Not started, not registered, not installed but waiting on something else. Working.
+
+So when an install stops because the machine is missing something underneath it, that is not a failed
+item. It is a prerequisite that was not met yet. Stop the item where it is, install what is missing,
+prove that piece works, then go back and finish the item. In that order, every time, for the required
+base and for anything from the menu alike.
+
+**Never acceptable:** skipping the item, leaving it half installed, reporting it as pending when the
+missing piece was something you could have installed, or telling the user their machine does not have
+something and moving on. A user who selected an item and received an explanation instead of the item
+was not served.
+
+**Solve it yourself, as far as the machine allows.** The user already chose the item, and that choice
+covers whatever it needs in order to run. Say in one line what you are installing and why, then
+install it. Do not open a new round of questions over a build tool the user has never heard of.
+
+| What is missing | What to do |
+|-----------------|------------|
+| A package, a runtime, a command line tool | Install it from the official source, globally, per Sections 1.3 and 1.4, then continue |
+| A PATH that has not caught up with an install | Refresh it with the command in Section 3.1, and reopen the shell when that is not enough |
+| An operating system feature, or a service that is not running | Enable it or start it, and when it needs an administrator, hand the command over the way Section 3.6 does |
+| Something large, paid, or that changes how the machine boots | Say what it is and what it costs, and get a yes first |
+| Something only the user can do: a license, a sign in, an elevation prompt, a reboot, a firmware setting | Ask for exactly that one thing, in one line, then pick the work back up yourself |
+
+**One thing is genuinely impossible, and only one:** hardware the machine does not have, or a
+component the vendor does not ship for this operating system. A graphics card that is not there
+cannot be installed. Say so plainly, offer the alternative when the menu has one, and record it.
+Everything short of that gets installed.
+
+**Do not loop.** Work a different cause each time, never run the same command twice expecting a
+different answer, and after three real attempts stop, report exactly where it stands with the last
+error text, and ask the user how they want to proceed. Section 3.6 does this for Docker, and the
+shape is the same everywhere else.
+
 ---
 
 ## Section 2. Phase 1, audit the machine
@@ -538,7 +579,9 @@ Then say, in one sentence, how many items Phase 2 will install, and ask for conf
 ## Section 3. Phase 2, install the missing required base
 
 Install only the rows the audit marked as missing or below the floor, plus any merely outdated row the
-user approved upgrading. Announce each one before running it.
+user approved upgrading. Announce each one before running it. When one of them turns out to need
+something else first, Section 1.12 applies here as it does everywhere: install that first, then
+finish the row.
 
 Docker Desktop and Claude Code are usually already present, because the person installed them before
 the session. Verify anyway. "Installed" is not the same as "running" for Docker.

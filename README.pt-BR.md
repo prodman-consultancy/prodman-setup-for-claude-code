@@ -29,7 +29,9 @@ defasado propõe atualização no lugar. Ele nunca instala por cima de uma vers�
 reinstala para "consertar" algo.
 
 **Instala a base só se estiver faltando.** Node.js, Git, Python, uv, Docker Desktop,
-VS Code. Sempre da fonte oficial atual do fornecedor, nunca de instalador embalado.
+VS Code. Sempre da fonte oficial atual do fornecedor, nunca de instalador embalado. Quando algo
+que você pediu depende de uma peça que a máquina não tem, ele instala essa peça e termina a
+instalação, em vez de pular o item.
 
 **Oferece 18 itens opcionais em um menu só**, em três grupos, respondidos numa única resposta:
 

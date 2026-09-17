@@ -28,7 +28,9 @@ propose an upgrade in place. It never installs over a working version and never 
 something.
 
 **Installs the base only if it is missing.** Node.js, Git, Python, uv, Docker Desktop,
-VS Code. Always from the vendor's current official source, never a bundled installer.
+VS Code. Always from the vendor's current official source, never a bundled installer. When
+something you asked for turns out to need a piece your machine does not have, it installs that
+piece and finishes the job instead of skipping the item.
 
 **Offers 18 optional items in one menu**, in three groups, answered in a single reply:
 
