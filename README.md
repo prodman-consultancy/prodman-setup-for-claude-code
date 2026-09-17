@@ -47,6 +47,10 @@ through the administrative screens itself, and you only sign in. For Google Work
 default path, because the manual route means creating a cloud project, enabling one API per tool, and
 configuring an OAuth client.
 
+Whatever it creates on an outside service, a cloud project, an OAuth client, an access token, is
+created under your own account and carries your name, never the name of whoever handed you this
+file.
+
 **Writes a global instruction file.** At the end it creates or updates `~/.claude/CLAUDE.md`, inside a
 marked block, merging rather than overwriting whatever is already there. The rules it writes depend on
 what actually got installed, so a rule never points at a tool that is not present.

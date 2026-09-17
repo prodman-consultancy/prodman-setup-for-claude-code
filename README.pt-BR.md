@@ -48,6 +48,9 @@ pelas telas administrativas sozinho, e você só autentica. No Google Workspace 
 porque o percurso manual significa criar um projeto na nuvem, habilitar uma API por ferramenta e
 configurar um cliente OAuth.
 
+O que ele cria em serviço de fora, um projeto na nuvem, um cliente OAuth, um token de acesso, nasce
+na sua conta e leva o seu nome, nunca o nome de quem entregou este arquivo a você.
+
 **Escreve um arquivo de instruções global.** No fim ele cria ou atualiza o `~/.claude/CLAUDE.md`, dentro
 de um bloco marcado, mesclando em vez de sobrescrever o que já estiver lá. As regras que ele escreve
 dependem do que foi instalado de fato, então nenhuma regra aponta para uma ferramenta ausente.
