@@ -11,9 +11,11 @@ memories. Everything it installs is installed globally, for every project and ev
 ## Section 0. How to use this file
 
 **Before you start, put Claude Code on its strongest setting.** In the conversation, send `/model opus`
-and then `/effort max`. This run audits your machine, installs software, edits configuration files, and
-drives a browser through administrative screens. On a smaller model or a lower effort level it produces
-a run that looks finished and is not. Both settings stay until you change them back the same way.
+on its own, wait for it to land, then send `/effort max`, also on its own. One per message: two slash
+commands in the same message are read as a single command and come back as an error. This run audits
+your machine, installs software, edits configuration files, and drives a browser through administrative
+screens. On a smaller model or a lower effort level it produces a run that looks finished and is not.
+Both settings stay until you change them back the same way.
 
 **For the person holding this file:** open Claude Code (VS Code extension or terminal), paste this
 file into the conversation or point the agent at its path, and say "run this setup." Then answer the
@@ -74,16 +76,25 @@ The effort level of a session already running cannot be read with certainty, bec
 changed it after the session started. When there is no proof it is at `max`, ask for it anyway. Typing
 it a second time costs nothing.
 
-**If either one is below target, stop and ask for exactly this, then wait:**
+**If either one is below target, ask for one command at a time, and wait for each one.** Two slash
+commands in the same message do not work. Claude Code reads the whole message as a single command and
+answers that the model was not found, which reads like a failure to somebody who did exactly what you
+asked. So ask for this one, by itself:
 
 ```
 /model opus
+```
+
+Once that lands, ask for this one, also by itself:
+
+```
 /effort max
 ```
 
-Both take effect immediately, in the session already open, with no restart. Say why in one line: the
-strongest model and the deepest reasoning, because this run changes the machine. Do not start Phase 1
-until they are set.
+Say it in the request, in one short line: one per message, and send the second only after the first
+comes back. Both take effect immediately, in the session already open, with no restart. Say why in one
+line too: the strongest model and the deepest reasoning, because this run changes the machine. Do not
+start Phase 1 until both are set.
 
 **If the user will not or cannot type them**, write the stored defaults instead and use the restart
 protocol in Section 1.9, because a stored default only applies to a session started after it. Merge
