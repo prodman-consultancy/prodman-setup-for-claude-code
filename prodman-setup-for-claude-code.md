@@ -25,8 +25,9 @@ it stopped when you come back.
 
 **For the agent:** read Section 1 in full before acting, because it governs everything else. Then read
 each phase's section when you reach that phase, not before, and consult the Appendix only when
-something fails. Execute the phases in order. Do not skip Phase 1. Do not install anything the machine
-already has. Do not install anything the user did not select.
+something fails. Execute the phases in order, one at a time, each one finished before the next one starts, the way
+Section 1.13 requires. Do not skip Phase 1. Do not install anything the machine already has. Do
+not install anything the user did not select.
 
 Execution order, fixed:
 
@@ -185,6 +186,8 @@ on the result of earlier ones:
 
 So the optional phases genuinely come before the mandatory closing ones. Do not try to write the
 `CLAUDE.md` or the memories early to save time. Compress inside a phase, never across the order.
+Section 1.13 is the hard form of this rule: a phase ends before the next one starts, and nothing
+belonging to a later phase happens early.
 
 **Spend as few of the user's tokens as possible.** The run costs the user real money, and this file is
 long. Completeness and rigor are not negotiable, but they are the floor to hit, not a budget to spend:
@@ -471,6 +474,37 @@ Everything short of that gets installed.
 different answer, and after three real attempts stop, report exactly where it stands with the last
 error text, and ask the user how they want to proceed. Section 3.6 does this for Docker, and the
 shape is the same everywhere else.
+
+### 1.13 One phase at a time, and forward only when the phase is finished
+
+The phases are a sequence, not a suggestion. Each one is finished completely before the next one
+begins. This is the rule that holds the whole run together, and it outranks every instinct to
+save time.
+
+**A phase is finished when every item in it is either done and verified, or dropped by the user,
+in this run, in words.** Nothing else counts. Not mostly done. Not done except for one thing to
+come back to. Not installed but unchecked. If one item of Phase 2 did not install, Phase 2 is not
+over, and Phase 3 does not start.
+
+**Forbidden, with no exception:**
+
+- Starting the next phase while anything in the current one is still open.
+- Doing part of a later phase early because it will be needed anyway.
+- Running phases side by side, or interleaving their steps to look fast.
+- Leaving an item behind with a note to return to it. The return does not happen, and the user
+  finishes the run believing they got something they did not get.
+- Calling a phase complete on the strength of what you meant to do. Check the machine and say
+  what it answered.
+
+**When something in the phase will not finish**, Section 1.12 is the first answer: the missing
+piece gets installed and the item gets finished. If it still cannot be done, stop, say in one
+line exactly where it stands, and ask. **The user can tell you to drop that item and move on, and
+then you move on.** That permission comes from them, in this run, in words. You never grant it to
+yourself, and silence is not it.
+
+**Close every phase out loud, in one line**: what it did, and that it is done. Then open the next
+one by name. The user should be able to say which phase they are in at any moment, and no phase
+ends quietly.
 
 ---
 
@@ -993,6 +1027,14 @@ the account you authorize.
 Needs: a Google account. Free.
 Official source: https://developers.google.com/workspace/guides/configure-mcp-servers
 
+**This item is that MCP server, set up exactly the way this section describes, and nothing
+else.** Claude also ships first party Google connectors that turn on in one click from the
+connector directory. They are not this item, they are not a faster version of it, and they are
+not authorized here. Never offer one, never present one as a shortcut, and never fall back to one
+when a screen in the flow below gives you trouble. Friction is solved by finishing this flow, not
+by changing where the user ends up. If they ask about those connectors, one line is enough: they
+reach less, and the mail one cannot send mail, which is half of what this item exists for.
+
 **The agent does this entire setup. The user does not touch the Google Cloud console.** This one is not
 optional assistance, it is how the item is installed, because the manual path involves creating a cloud
 project, enabling one API per tool, and configuring an OAuth client, which is genuinely too technical to
@@ -1018,7 +1060,10 @@ Then, through the browser, in this order:
 2. Create a project for this, or reuse one if the user says they have one. Name it `Claude Code`,
    per Section 1.10. The project belongs to the user, so it never carries the name of this file, of the
    setup, or of whoever delivered it.
-3. Enable the API for each tool the user picked, and only those.
+3. Enable the API for each tool the user picked, and only those. **When Gmail is one of them, the
+   authorization has to cover sending, not just reading.** A mail connection that reads and cannot
+   send breaks the first time the user asks for a reply, so the consent has to carry the send
+   scope next to the read scope.
 4. Configure the OAuth consent screen and create a desktop OAuth client. Both carry the same name as
    the project, per Section 1.10, because the consent screen is what the user reads when they authorize
    it and it has to say something they recognize.
@@ -1026,7 +1071,10 @@ Then, through the browser, in this order:
 6. Register the MCP server pointing at those credentials, with `--scope user`, following the current
    official instructions at the source URL above rather than a command copied from here, because this
    configuration changes shape between versions.
-7. Complete the first authorization so the connection is live.
+7. Complete the first authorization so the connection is live, then prove it instead of assuming
+   it. Read something small through each API the user picked. **When Gmail is among them, ask the
+   user for a yes and send a one line test message to their own address.** Sending is the part
+   that quietly turns out to be missing, and nothing short of a sent message proves it works.
 
 Store the credentials file somewhere private, `$HOME/.claude/` or the location the official instructions
 specify. Never on the Desktop, never inside a repository, never printed to the screen.
@@ -1926,6 +1974,15 @@ character, a non breaking space, or an exotic space inside text.
 - For anything that creates a paid resource, deletes data, commits, pushes, deploys, sends email, or
   affects production, show the user which account is about to be used and get confirmation, even when
   it looks obvious.
+
+**If item 2, Google Workspace, was installed:**
+
+- Google is reached through the MCP server this setup configured, on the user's own cloud project
+  and OAuth client. Write its registered name into this rule when you generate it. Never replace it
+  with a first party Google connector, never propose one as an easier route, and never install one
+  next to it. Two paths into the same account leaves the user unable to tell which one answered.
+- Mail goes out through that connection. When sending fails with a permission error, the fix is the
+  authorization on that OAuth client, never a different tool.
 
 **If item 17, Obsidian, was installed:**
 
