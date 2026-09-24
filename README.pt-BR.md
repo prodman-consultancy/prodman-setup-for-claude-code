@@ -33,13 +33,13 @@ VS Code. Sempre da fonte oficial atual do fornecedor, nunca de instalador embala
 que você pediu depende de uma peça que a máquina não tem, ele instala essa peça e termina a
 instalação, em vez de pular o item.
 
-**Oferece 18 itens opcionais em um menu só**, em três grupos, respondidos numa única resposta:
+**Oferece 19 itens opcionais em um menu só**, em três grupos, respondidos numa única resposta:
 
 | Grupo | O que cobre |
 |-------|-------------|
 | Conexões, 1 a 9 | Automação de navegador, Google Workspace, Docker, GitHub, Railway, Supabase, Cloudflare, Metabase, Higgsfield |
 | Métodos de trabalho, 10 a 13 | Disciplina de código mínimo, prática de engenharia, segurança por padrão, escrita em português brasileiro |
-| Ferramentas separadas, 14 a 18 | Transcrição de voz, limpeza de metadados, análise de segurança de skill, notas, apresentações |
+| Ferramentas separadas, 14 a 19 | Transcrição de voz, limpeza de metadados, análise de segurança de skill, notas, apresentações, scraping web |
 
 Cada item explica, em linguagem simples, o que faz por você, o que você precisa ter antes de funcionar
 e se custa algo. Nada é instalado para um serviço em que você não tem conta.

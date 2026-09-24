@@ -36,7 +36,7 @@ Execution order, fixed:
 | 0 | Confirm the model and the effort level | No |
 | 1 | Audit the machine and report findings | No |
 | 2 | Install the missing required base | No |
-| 3, 4, 5 | One menu of 18 items, one answer, then install what was picked, in that order. May include one restart in the middle when browser assistance is needed | Yes, the user may pick none |
+| 3, 4, 5 | One menu of 19 items, one answer, then install what was picked, in that order. May include one restart in the middle when browser assistance is needed | Yes, the user may pick none |
 | 6 | Restart, finish authorizations, verify, report | Only when nothing was installed |
 | 7 | Write the global `CLAUDE.md` | No |
 | 8 | Write memories, last of all | No |
@@ -166,7 +166,7 @@ this becomes unpleasant. Compress wherever the pipeline allows:
 
 - Run the whole audit battery in one pass, not one command at a time.
 - Group independent installs into one call instead of one call per package.
-- Present all three menus, items 1 through 18, in a single pass and take one answer for all of them.
+- Present all three menus, items 1 through 19, in a single pass and take one answer for all of them.
   This is the preferred path, not just an accepted one.
 - Ask for every credential the selection requires in one message, not one at a time.
 - When a long install is running, keep talking to the user about the next decision instead of waiting
@@ -428,7 +428,7 @@ Its subject is what the user installs from the next session on, and the rule wri
 says exactly that.
 
 So do not offer a scan of the runbook, of the MCP servers, skills, plugins and tools in items 1
-through 18, or of the `CLAUDE.md` written in Phase 7, during the run. The reason is practical. The
+through 19, or of the `CLAUDE.md` written in Phase 7, during the run. The reason is practical. The
 scanner matches patterns in instruction text, so it flags ordinary runbook prose, and pausing an
 install to ask a non technical user to approve what they just chose, on the strength of a report they
 cannot read, buys nothing. It also doubles the cost of a run they are paying for.
@@ -895,7 +895,7 @@ text and the next step. Everything that does not need Docker still gets installe
 
 ### 4.1 Present all three menus at once
 
-Phases 3, 4, and 5 have one shared numbering, 1 to 18, and they are presented **in a single message**,
+Phases 3, 4, and 5 have one shared numbering, 1 to 19, and they are presented **in a single message**,
 then answered once. This is the default path, not an option. Three separate rounds of question and
 answer cost the user three times the tokens and three times the waiting for no benefit.
 
@@ -908,7 +908,7 @@ The message carries three short headers and the items under each, nothing else:
 > **Working methods, items 10 to 13.** A skill is a method the agent loads and follows. A connection
 > gives it reach, a skill gives it judgment. Free, installed once, valid in every project.
 >
-> **Separate tools, items 14 to 18.** Not part of Claude Code. Install only if the description matches
+> **Separate tools, items 14 to 19.** Not part of Claude Code. Install only if the description matches
 > something you actually do.
 
 Each item is one line: number, name, what it does for you, what you need to have, and the cost. Mark
@@ -938,7 +938,7 @@ Accept any of these, and say so in one compact line:
 | `one by one`, `um por um` | ask item by item, `Y` or `N` each |
 
 **The recommended set** is exactly the items marked `[Recommended]`: 1 through 4, plus 10, 11, and 12,
-plus 13 when the user speaks Portuguese. No item between 14 and 18 is recommended by default, because
+plus 13 when the user speaks Portuguese. No item between 14 and 19 is recommended by default, because
 each one only makes sense for someone who already does that specific thing. Say that in one line if the
 user picks `recommended`, so they know the optional block was not silently included.
 
@@ -1334,7 +1334,7 @@ header text for this block lives there. This section is only the item detail and
 | A tool the **agent** uses, items 15 and 16 | `$HOME/.claude/tools/<name>/`, or `uv tool` for a CLI | The user never opens it directly |
 | An application the **user** opens and works in, item 14 | a folder named after the tool, on the resolved Desktop | The user has to be able to find it |
 | A workspace the user keeps files in, item 18 | a folder named `Open Slide`, inside the resolved Documents folder | It accumulates every deck the user makes, so it belongs where documents live, not on the Desktop |
-| An application from a package manager, item 17 | wherever the package manager puts it | Not our call |
+| A package from a package manager, items 17 and 19 | wherever the package manager puts it | Not our call |
 
 Never run `git clone` without a destination path. Without one it clones into whatever directory the
 shell happens to be in, and neither the user nor a future session will find it. Resolve the Desktop
@@ -1346,7 +1346,7 @@ Record the final path of everything installed here. Phase 8 writes it into
 `reference-optional-tools.md`, and a later session needs it to find the tool instead of installing a
 second copy.
 
-### 6.1 Items 14 through 18
+### 6.1 Items 14 through 19
 
 ---
 
@@ -1532,6 +1532,32 @@ that rule is only enforceable if the version and the path were written down here
 
 To start it later, `npm run dev` from that folder. Tell the user the address it prints, and that it only
 runs while that command is running.
+
+---
+
+**19. Scrapling**
+A scraping tool that keeps working when a site changes its layout, instead of breaking the moment an
+element moves. The agent uses it from Python when a task needs to pull data off a web page. Only worth
+installing if you actually scrape sites.
+Official source: https://github.com/D4Vinci/Scrapling
+
+It is a Python library, installed globally with the fetchers extra so it can drive a real browser:
+
+```powershell
+py -m pip install "scrapling[fetchers]"
+scrapling install
+```
+
+```bash
+python3 -m pip install "scrapling[fetchers]"
+scrapling install
+```
+
+Needs Python 3.10 or newer from Phase 2. The first command installs the library and its fetchers; the
+second downloads the browsers it drives and their system dependencies, so it is a large download. If
+`scrapling` is not on PATH afterward, call it with `py -m scrapling install` on Windows or
+`python3 -m scrapling install` on macOS. Record that it was installed for `reference-optional-tools.md`
+in Phase 8; being a package, it has no folder path, so note the interpreter it went into.
 
 ---
 

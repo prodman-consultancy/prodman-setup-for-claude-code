@@ -32,13 +32,13 @@ VS Code. Always from the vendor's current official source, never a bundled insta
 something you asked for turns out to need a piece your machine does not have, it installs that
 piece and finishes the job instead of skipping the item.
 
-**Offers 18 optional items in one menu**, in three groups, answered in a single reply:
+**Offers 19 optional items in one menu**, in three groups, answered in a single reply:
 
 | Group | What it covers |
 |-------|----------------|
 | Connections, 1 to 9 | Browser automation, Google Workspace, Docker, GitHub, Railway, Supabase, Cloudflare, Metabase, Higgsfield |
 | Working methods, 10 to 13 | Minimal-code discipline, engineering practice, security by default, Brazilian Portuguese writing |
-| Separate tools, 14 to 18 | Voice transcription, metadata cleaning, skill security scanning, notes, presentations |
+| Separate tools, 14 to 19 | Voice transcription, metadata cleaning, skill security scanning, notes, presentations, web scraping |
 
 Each item explains, in plain language, what it does for you, what you need to have before it works, and
 whether it costs anything. Nothing is installed for a service you do not have an account on.
