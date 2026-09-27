@@ -10,9 +10,27 @@ persistent memories. Everything it installs is global, valid in every project an
 
 ## Use it
 
-1. Download [`prodman-setup-for-claude-code.md`](prodman-setup-for-claude-code.md).
-2. Open Claude Code, in the VS Code extension or in a terminal.
-3. Paste the file into the conversation, or point Claude at its path, and say "run this setup".
+Starting from zero takes five steps. Already have Claude Code open and signed in? Go straight to
+step 5.
+
+1. **Install VS Code.** Download it from [code.visualstudio.com](https://code.visualstudio.com/download)
+   and install it with the default options.
+2. **Add Claude Code to VS Code.** In VS Code, open the Extensions view (`Ctrl+Shift+X` on Windows,
+   `Cmd+Shift+X` on macOS), search for **Claude Code**, and install the one published by
+   **Anthropic**.
+3. **Get a paid Claude plan.** Create your account at [claude.ai](https://claude.ai) and subscribe to
+   Pro or Max. Claude Code does not run on the free plan.
+4. **Sign in.** Click the Claude Code icon, a spark, in the bar on the left side of VS Code, and start
+   a new conversation. The first time, a sign-in screen appears: click **Sign in** and approve it in
+   the browser with the account from step 3.
+5. **Run the setup.** Copy the message below, paste it into Claude Code, and press Enter:
+
+   ```text
+   Set up my Claude Code by following the prodman-setup-for-claude-code.md runbook in this repository: https://github.com/prodman-consultancy/prodman-setup-for-claude-code
+   ```
+
+Prefer the file? Download [`prodman-setup-for-claude-code.md`](prodman-setup-for-claude-code.md),
+drag it into the conversation, and say "run this setup".
 
 Answer the questions and nothing else. The runbook asks for numbers, not sentences. Nothing is installed
 without confirmation, and every item can be added later.
@@ -63,8 +81,8 @@ into a memory, only which service and which account.
 
 ## Requirements
 
-Claude Code, signed in, on Windows or macOS. Everything else the runbook installs for you if it is
-missing.
+Claude Code, signed in, on Windows or macOS (steps 1 to 4 above). Everything else the runbook
+installs for you if it is missing.
 
 Run it on the strongest setting you have. At the bottom of the box where you type, Claude Code shows
 the model and the effort level. Click there, pick Opus and ultracode. The runbook checks both before it

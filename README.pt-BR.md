@@ -11,9 +11,26 @@ futura.
 
 ## Como usar
 
-1. Baixe o arquivo [`prodman-setup-for-claude-code.md`](prodman-setup-for-claude-code.md).
-2. Abra o Claude Code, na extensão do VS Code ou no terminal.
-3. Cole o arquivo na conversa, ou aponte o caminho dele para o Claude, e diga "roda esse setup".
+Do zero, são cinco passos. Já tem o Claude Code aberto e com a conta conectada? Vá direto ao passo 5.
+
+1. **Instale o VS Code.** Baixe em [code.visualstudio.com](https://code.visualstudio.com/download) e
+   instale com as opções padrão.
+2. **Ponha o Claude Code no VS Code.** No VS Code, abra a área de extensões (`Ctrl+Shift+X` no
+   Windows, `Cmd+Shift+X` no macOS), procure **Claude Code** e instale a que é publicada pela
+   **Anthropic**.
+3. **Assine um plano pago do Claude.** Crie a sua conta em [claude.ai](https://claude.ai) e assine o
+   Pro ou o Max. O Claude Code não roda no plano gratuito.
+4. **Entre com a sua conta.** Clique no ícone do Claude Code, uma faísca, na barra do lado esquerdo do
+   VS Code, e comece uma conversa nova. Na primeira vez aparece a tela de entrada: clique em
+   **Sign in** e aprove no navegador com a conta do passo 3.
+5. **Rode o setup.** Copie a mensagem abaixo, cole no Claude Code e aperte Enter:
+
+   ```text
+   Instale e configure o meu Claude Code seguindo o roteiro prodman-setup-for-claude-code.md deste repositório: https://github.com/prodman-consultancy/prodman-setup-for-claude-code
+   ```
+
+Prefere o arquivo? Baixe o [`prodman-setup-for-claude-code.md`](prodman-setup-for-claude-code.md),
+arraste para a conversa e diga "roda esse setup".
 
 Responda as perguntas e nada mais. O roteiro pede números, não frases. Nada é instalado sem
 confirmação, e qualquer item pode ser adicionado depois.
@@ -63,8 +80,8 @@ para memória, apenas qual serviço e qual conta.
 
 ## Requisitos
 
-Claude Code, autenticado, no Windows ou no macOS. O resto o roteiro instala para você, se estiver
-faltando.
+Claude Code, autenticado, no Windows ou no macOS (passos 1 a 4 acima). O resto o roteiro instala
+para você, se estiver faltando.
 
 Rode na configuração mais forte que você tiver. No rodapé da caixa onde você digita, o Claude Code
 mostra o modelo e o nível de esforço. Clique ali e escolha Opus e ultracode. O roteiro confere as duas
